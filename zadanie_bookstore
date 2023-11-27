@@ -1,0 +1,32 @@
+from flask import Flask, jsonify, request, abort, json
+
+app = Flask(__name__)
+
+with open('books.json') as json_data:
+    data = json.load(json_data)
+
+with open('books.json') as b:
+    books_data = json.load(b)
+
+@app.route("/titles")
+def get_titles():
+    result = []
+    for book in data['books']:
+        result.append(book['title'])
+    return result
+
+@app.route("/titles/<isbn>")
+def get_titles_by_isbn(isbn=None):
+    if not isbn:
+        result = []
+        for book in data['books']:
+            result.append(book['title'])
+        return result
+    else:
+        for book in data['books']:
+            if book['isbn'] == isbn:
+                return jsonify(book)
+            return "Not found", 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
